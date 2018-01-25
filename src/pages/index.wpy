@@ -1,0 +1,30 @@
+<style lang="less">
+.userinfo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+</style>
+
+<template>
+  <!-- <view>
+
+  </view> -->
+  <counter1></counter1>
+</template>
+
+<script>
+import wepy from 'wepy'
+import Counter from 'counter';
+
+export default class Index extends wepy.page {
+    config = {};
+    components = {counter1: Counter};
+
+    data = {};
+    methods = {};
+
+    events = {};
+    onLoad() {};
+}
+</script>

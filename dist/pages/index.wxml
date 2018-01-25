@@ -1,0 +1,10 @@
+
+  <!-- <view>
+
+  </view> -->
+  
+  <view class="counter {{$counter1$style}}">
+    <button bindtap="$counter1$plus" size="mini">  +  </button>
+    <button bindtap="$counter1$minus" size="mini">  -  </button>
+    <text class="count {{$counter1$num > 55 ? 'red' : ''}} {{$counter1$num < 45 ? 'green' : ''}}" > {{$counter1$num}} </text>
+  </view>
