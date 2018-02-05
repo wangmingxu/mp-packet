@@ -1,0 +1,166 @@
+<style lang="less">
+.logo {
+  position: absolute;
+  top: -55rpx;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 195rpx;
+  height: 195rpx;
+}
+.card {
+  padding: 30rpx;
+  color: #565656;
+  font-weight: bold;
+}
+.balance {
+  &-remark {
+    margin-top: 140rpx;
+    text-align: center;
+    font-size: 30rpx;
+  }
+  &-num {
+    font-size: 60rpx;
+    text-align: center;
+  }
+}
+.withdrawal {
+  &-remark {
+    font-size: 26rpx;
+    margin-top: 25rpx;
+  }
+  &-iptWrapper {
+    margin-top: 20rpx;
+    border-bottom: 1rpx solid #d5d5d5;
+    display: flex;
+    padding-bottom: 10rpx;
+    .icon {
+      font-size: 60rpx;
+      line-height: 80rpx;
+      font-weight: bold;
+      padding-right: 10rpx;
+    }
+    input {
+      height: 80rpx;
+      box-sizing: border-box;
+      flex: 1;
+      font-size: 72rpx;
+      color: #f96359;
+    }
+  }
+}
+.input-placeholder {
+  font-size: 30rpx;
+  color: #b5b3b3;
+  font-weight: normal;
+}
+.tip {
+  font-size: 24rpx;
+  color: #b5b3b3;
+  margin-top: 20rpx;
+  line-height: 50rpx;
+  font-weight: normal;
+  .all {
+    color: #f96459;
+    // font-weight: bold;
+  }
+}
+.btn {
+  text-align: center;
+  width: 525rpx;
+  line-height: 70rpx;
+  border-radius: 35rpx;
+  color: #ffffff;
+  font-size: 26rpx;
+  font-weight: bold;
+  background-color: #f96d5b;
+  margin-top: 25rpx;
+  &::after {
+    border: none;
+  }
+}
+.time {
+  font-size: 24rpx;
+  color: #b5b3b3;
+  text-align: center;
+  margin-top: 30rpx;
+  font-weight: normal;
+}
+</style>
+
+<template>
+  <wxs module="moneyFormat" src="../filter/moneyFormat.wxs"></wxs>
+  <image src="../assets/images/top.png" class="top" mode="widthFix"></image>
+  <view class="card">
+    <image src="../assets/images/logo-balance.png" class="logo" bindlongpress="opendebug"></image>
+    <view class="balance-remark">账户余额(元)</view>
+    <view class="balance-num">{{moneyFormat.getYuan(userMoney)}}</view>
+    <view class="withdrawal-remark">提现金额</view>
+    <view class="withdrawal-iptWrapper">
+        <text class="icon">¥</text>
+        <input placeholder="请输入提现金额" placeholder-class="input-placeholder" type="digit"/>
+    </view>
+    <view class="tip">提现到微信钱包,<text class="all" bindtap="withdrawalAll">全部提现</text></view>
+    <button class="btn" bindtap="submit">提现</button>
+    <view class="time">1-2个工作日到账</view>
+</view>
+</template>
+
+<script>
+import wepy from 'wepy'
+import promisify from '../utils/promisify'
+import { requestBaseUrl } from '../constant'
+import requestPromise from '../utils/request'
+
+export default class Balance extends wepy.page {
+  onPullDownRefresh(){
+    // this.loadData().then(()=>{
+        wx.stopPullDownRefresh();
+    // });
+  }
+  config = {}
+  components = {}
+  data = {
+    userMoney: ''
+  }
+  methods = {
+    async opendebug() {
+      await promisify(wx.setEnableDebug,{enableDebug:true})
+      console.log('开始调试');
+    },
+    withdrawalAll() {
+      wx.showModal({
+        title: '提示',
+        content: '提现功能尚未开放',
+        showCancel: false
+      })
+    },
+    submit() {
+      wx.showModal({
+        title: '提示',
+        content: '提现功能尚未开放',
+        showCancel: false
+      })
+    }
+  }
+
+  events = {
+    tabChange: index => {
+      // console.log(index)
+    }
+  }
+
+  async onLoad() {
+    const userInfo = await this.$parent.getUserInfo()
+    this.setData({ userInfo })
+  }
+  async onShow() {
+    const { data } = await promisify(wx.getStorage, { key: 'signInfo' })
+    const userMoney = await requestPromise({
+      url: `${requestBaseUrl}/loadUserMoney`,
+      data
+    })
+    this.userMoney = userMoney.data;
+    this.$apply()
+  }
+}
+</script>

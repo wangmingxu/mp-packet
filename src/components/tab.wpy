@@ -1,0 +1,62 @@
+<style lang="less">
+.common-tab {
+  display: flex;
+}
+.tab-item {
+  flex: 1;
+  border-radius: 0px;
+  color: #565656;
+  background-color: #ffffff;
+  font-size: 28rpx;
+  height: 80rpx;
+  line-height: 80rpx;
+  &::after {
+    border: none;
+  }
+  &.active {
+    background-color: #ebebeb;
+    font-weight: bold;
+    font-size: 28rpx;
+  }
+}
+</style>
+<template>
+  <view class="common-tab"  bindtap="changeTab">
+    <repeat for="{{list}}" key="index" index="index" item="item">
+        <button class="tab-item {{index==current?'active':null}}" data-index="{{index}}">{{item.text}}</button>
+    </repeat>
+  </view>
+</template>
+<script>
+import wepy from 'wepy'
+
+export default class Tab extends wepy.component {
+  props = {
+    list: {
+      type: Array,
+      default: 'null'
+    },
+    current: {
+      type: Number,
+      default: 0,
+    }
+  }
+
+  data = {
+    activeItem: 0
+  }
+
+  events = {}
+
+  methods = {
+    changeTab(e) {
+      const index = e.target.dataset.index
+      this.$emit('tabChange', index)
+    }
+  }
+
+  onLoad() {
+    console.log(this.current)
+  }
+}
+</script>

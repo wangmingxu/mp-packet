@@ -1,0 +1,46 @@
+
+  <wxs module="moneyFormat" src="../filter/moneyFormat.wxs"/>
+  
+  <view class="common-tab" bindtap="$tab$changeTab">
+    <block wx:for="{{$tab$list}}" wx:for-index="$tab$index" wx:for-item="$tab$item" wx:key="$tab$index">
+        <button class="tab-item {{$tab$index==$tab$current?'active':$tab$null}}" data-index="{{$tab$index}}">{{$tab$item.text}}</button>
+    </block>
+  </view>
+
+  <swiper bindchange="tabContentChange" current="{{currentTab}}">
+  <block  wx:for="{{tabList}}" wx:key="{{index}}">
+    <swiper-item>
+      <view style="display:flex;flex-direction: column;height:100%">
+        <scroll-view scroll-y style="height: 1px;flex:1">
+      <view class="dashboard">
+        <image class="dashboard-bg" src="../assets/images/bg-record.png" mode="widthFix"/>
+        <image src="{{userInfo.avatarUrl}}" class="avatar"/>
+        <view class="total">
+            <view class="money">
+                <view class="num">{{index>0?moneyFormat.getYuan(receiveLog.money):moneyFormat.getYuan(sendLog.money)}}</view>
+                <view class="remark">金额(元)</view>
+            </view>
+            <view class="count">
+                <view class="num">{{index>0?receiveLog.number:sendLog.number}}</view>
+                <view class="remark">数量(个)</view>
+            </view>
+        </view>
+        <view class="divider"/>
+      </view>
+      <view class="history-list">
+          <view class="item" wx:for="{{index>0?receiveLog.list:sendLog.list}}" wx:key="{{index}}" bindtap="toSharePage" data-wpytosharepage-a="{{item.id}}">
+              <view class="left">
+                <view class="name">{{item.wish||item.senderName}}</view>
+                <view class="count" wx-if="{{item.number}}">{{item.number-item.surplusNumber}}/{{item.number}}</view>
+              </view>
+              <view class="right">
+                <view class="money">{{moneyFormat.getYuan(item.money)}}元</view>
+                <view class="date">{{item.createTime}}</view>
+              </view>
+          </view>
+      </view>
+        </scroll-view>   
+      </view>   
+    </swiper-item>
+  </block>
+</swiper>

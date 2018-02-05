@@ -1,0 +1,14 @@
+
+<view>
+  
+  <view class="common-tab">
+    <block wx:for="{{$tab$list}}" wx:for-index="$tab$index" wx:for-item="$tab$item" wx:key="$tab$index">
+        <button class="tab-item {{$tab$index==$tab$activeItem?'active':$tab$null}}" bindtap="$tab$changeTab" data-wpychangetab-a="{{$tab$index}}">{{$tab$item.text}}</button>
+    </block>
+  </view>
+
+  <view class="dashboard">
+    <image class="dashboard-bg" src="../assets/images/bg-record.png" mode="widthFix"/>
+
+  </view>
+  </view>

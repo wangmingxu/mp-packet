@@ -1,0 +1,303 @@
+<style lang="less">
+page {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+.dashboard {
+  height: 576rpx;
+  &-bg {
+    width: 100%;
+    height: 576rpx;
+    display: block;
+  }
+}
+scroll-view {
+  flex: 1;
+}
+.avatar {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 150rpx;
+  height: 150rpx;
+  border-radius: 50% 50%;
+  top: 50rpx;
+  border: 5rpx solid #ffffff;
+}
+.nickName {
+  position: absolute;
+  top: 215rpx;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 28rpx;
+  color: #ffffff;
+}
+.password {
+  width: 100%;
+  position: absolute;
+  text-align: center;
+  top: 255rpx;
+  font-size: 30rpx;
+  font-weight: bold;
+  color: #ffffff;
+}
+.false-tip {
+  font-size: 60rpx;
+  text-align: center;
+  color: #ffdecb;
+  position: absolute;
+  top: 335rpx;
+  width: 100%;
+  font-weight: bold;
+}
+.bounty {
+  color: #ffffff;
+  font-size: 30rpx;
+  font-weight: bold;
+  text-align: center;
+  position: absolute;
+  width: 100%;
+  top: 300rpx;
+  letter-spacing: 5rpx;
+  text {
+    font-size: 80rpx;
+  }
+}
+.tip {
+  position: absolute;
+  top: 400rpx;
+  width: 100%;
+  text-align: center;
+  font-size: 24rpx;
+  color: #fed0bd;
+}
+.fail {
+  width: 382rpx;
+  height: 206rpx;
+  position: absolute;
+  top: 398rpx;
+  left: 186rpx;
+}
+.gone {
+  width: 474rpx;
+  height: 282rpx;
+  position: absolute;
+  top: 315rpx;
+  left: 110rpx;
+}
+.operation {
+  position: absolute;
+  top: 455rpx;
+  display: flex;
+  padding: 0 232rpx;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 24rpx;
+  color: #ffffff;
+  width: 100%;
+  box-sizing: border-box;
+  line-height: 36rpx;
+  text-indent: 10rpx;
+  z-index: 20;
+  .make-packet {
+    image {
+      width: 36rpx;
+      display: block;
+      float: left;
+    }
+  }
+  .share {
+    padding: 0rpx;
+    font-size: 24rpx;
+    color: #ffffff;
+    line-height: 36rpx;
+    background: none;
+    &::after{
+        border: none;
+    }
+    image {
+      width: 28rpx;
+      display: block;
+      float: left;
+    }
+  }
+}
+.total {
+  line-height: 70rpx;
+  font-size: 26rpx;
+  color: #565656;
+  text-indent: 20rpx;
+}
+.list {
+  padding: 0 20rpx;
+  .item {
+    overflow: hidden;
+    color: #565656;
+    margin-bottom: 30rpx;
+    &-avatar {
+      width: 76rpx;
+      height: 76rpx;
+      float: left;
+      margin-right: 20rpx;
+      border-radius: 50% 50%;
+    }
+    .left{
+      width: 300rpx;
+      float: left;    
+      .sendName{
+        line-height: 46rpx;
+        font-size: 26rpx;
+      }  
+      .date {
+        font-size: 24rpx;
+        line-height: 30rpx;
+        color: #b5b3b3;
+      }      
+    }
+    .right {
+      float: right;
+      .money {
+        text-align: right;
+        line-height: 42rpx;
+        font-size: 26rpx;
+      }
+      .best{
+        line-height: 26rpx;
+        color: #fb8f4e;
+        font-size: 22rpx;
+        &-icon{
+          width: 24rpx;
+          height: 24rpx;
+          transform:translateY(3rpx);
+        }
+      }
+    }
+  }
+}
+</style>
+
+<template>
+<wxs module="moneyFormat" src="../filter/moneyFormat.wxs"></wxs>
+<wxs module="dateFormat" src="../filter/dateFormat.wxs"></wxs>
+<view class="dashboard">
+    <image src="../assets/images/bg-result.png" class="dashboard-bg"></image>
+    <image src="{{luckyMoneyResult.avatarUrl}}" class="avatar"></image>
+    <text class="nickName">{{luckyMoneyResult.nickName}}</text>
+    <view class="password">{{luckyMoneyResult.wish}}</view>
+    <!-- <view class="true-tip" wx-if="{{luckyMoneyResult.myMoney>0}}">答对了!</view> -->
+    <view class="false-tip" wx-if="{{luckyMoneyResult.myMoney<=0&&luckyMoneyResult.snatchStatus===1}}">很可惜,答错了!</view>
+    <view class="bounty" wx-if="{{luckyMoneyResult.myMoney>0}}"><text>{{moneyFormat.getYuan(luckyMoneyResult.myMoney)}}</text>元</view>
+    <view class="tip" wx-if="{{luckyMoneyResult.myMoney>0}}">已存入零钱，可用于发红包</view>
+    <!-- <image src="../assets/images/teki.png" class="fail" wx-if="{{luckyMoneyResult.myMoney<=0&&luckyMoneyResult.snatchStatus===1}}"></image> -->
+    <!-- <image src="../assets/images/teki2.png" class="gone"  wx-if="{{luckyMoneyResult.myMoney<=0&&luckyMoneyResult.snatchStatus===0}}"></image> -->
+    <view class="operation">
+        <view class="make-packet" bindtap="navToMakePage">
+            <image src="../assets/images/icon_packet.png" mode="widthFix"></image>
+            发红包
+        </view>
+        <button open-type="share" class="share" bindtap="share">
+            <image src="../assets/images/icon_share.png" mode="widthFix"></image>
+            去转发
+        </button>            
+    </view>
+</view>
+<view id="total" class="scroll-view-item total">
+    共{{moneyFormat.getYuan(luckyMoneyResult.money)}}元，领取{{luckyMoneyResult.number-luckyMoneyResult.surplusNumber}}/{{luckyMoneyResult.number}}个
+</view>
+<scroll-view scroll-y style="height: 1px;">
+    <view class="list">
+        <view class="item" wx:for="{{luckyMoneyResult.list}}" wx:key="{{index}}">
+            <image src="{{item.avatarUrl}}" class="item-avatar"></image>
+            <view class="left">
+                <view class="sendName">{{item.nickName}}</view>
+                <view class="date">{{dateFormat.getTime(item.createTime)}}</view>
+            </view>
+            <view class="right">
+                <view class="money">{{moneyFormat.getYuan(item.money)}}元</view>
+                <view class="best" wx-if="{{item.nickName === best}}"><image src="../assets/images/icon_best.png" class="best-icon"></image>手气最佳</view>
+            </view>
+        </view>                                
+    </view>
+</scroll-view>
+</template>
+
+<script>
+import wepy from 'wepy'
+import promisify from '../utils/promisify'
+import { requestBaseUrl } from '../constant'
+import requestPromise from '../utils/request'
+
+export default class Result extends wepy.page {
+  onShareAppMessage(options) {
+    console.log(options.from)
+    if (options.from === 'button') {
+      // 来自页面内转发按钮
+      console.log(options.target)
+    }
+    return {
+      title: '口快有，口慢无',
+      path: `/pages/packet?id=${this.id}`,
+      success: function(res) {
+        // 转发成功
+      },
+      fail: function(res) {
+        // 转发失败
+      }
+    }
+  }
+  onPullDownRefresh(){
+      this.loadData().then(()=>{
+          wx.stopPullDownRefresh();
+      });
+  }
+  config = {}
+  components = {}
+  data = {
+    id: -1,
+    luckyMoneyResult: {}
+  }
+  computed = {
+    best () {
+      const _t = this;
+      if(_t.luckyMoneyResult.surplusNumber===0){
+        const sortList = _t.luckyMoneyResult.list.sort((a,b)=>{
+          return b.money - a.money;
+        }).sort((a,b)=>{
+          return new Date(a.createTime) - new Date(b.createTime);
+        })
+        return sortList[0].nickName
+      }
+      return '';
+    }
+  }
+  methods = {
+    navToMakePage: () => {
+      wx.switchTab({ url: 'index' })
+    },
+    share: () => {},
+  }
+
+  events = {}
+
+  async onLoad(options) {
+    this.id = options.id
+    const userInfo = await this.$parent.getUserInfo()
+    this.setData({ userInfo })
+    this.loadData();
+  }
+
+  async loadData(){
+    const { data } = await promisify(wx.getStorage, { key: 'signInfo' })
+    const Result = await requestPromise({
+      url: `${requestBaseUrl}/snatchLuckyMoney`,
+      data: Object.assign(data, {
+        answer: 1, //随便填
+        id: this.id
+      })
+    })
+    this.luckyMoneyResult = Result.data
+    this.$apply()
+  }
+}
+</script>

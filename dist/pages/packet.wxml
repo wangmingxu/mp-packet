@@ -1,0 +1,35 @@
+
+<view class="page" wx-if="{{ready}}">
+  <image src="../assets/images/bg-packet.png" class="bg"/>
+  <image src="{{luckyMoneyInfo.avatarUrl}}" class="avatar"/>
+  <text class="nickName">{{luckyMoneyInfo.nickName}}</text>
+  <view class="password">我把红包藏在了祝福里</view>
+  <view class="audioList">
+    <view class="item">
+      <view class="checkbox {{chooseId==='1'?'active':null}}" bindtap="choose" data-wpychoose-a="1"/>
+      <view class="audio" bindtap="listen" data-wpylisten-a="{{luckyMoneyInfo.audio1}}" data-wpylisten-b="1">
+        <image wx-if="{{playingId!=='1'}}" src="../assets/images/icon_play.png" class="ctrl" mode="widthFix"/>
+        <image wx-if="{{playingId==='1'}}" src="../assets/images/icon_stop.png" class="ctrl" mode="widthFix"/>
+        <text>收听好友祝福</text>
+      </view>
+    </view>
+    <view class="item">
+      <view class="checkbox {{chooseId==='2'?'active':null}}" bindtap="choose" data-wpychoose-a="2"/>
+      <view class="audio" bindtap="listen" data-wpylisten-a="{{luckyMoneyInfo.audio2}}" data-wpylisten-b="2">
+        <image wx-if="{{playingId!=='2'}}" src="../assets/images/icon_play.png" class="ctrl" mode="widthFix"/>
+        <image wx-if="{{playingId==='2'}}" src="../assets/images/icon_stop.png" class="ctrl" mode="widthFix"/>
+        <text>收听好友祝福</text>
+        </view>
+    </view>
+    <view class="item">
+      <view class="checkbox {{chooseId==='3'?'active':null}}" bindtap="choose" data-wpychoose-a="3"/>
+      <view class="audio" bindtap="listen" data-wpylisten-a="{{luckyMoneyInfo.audio3}}" data-wpylisten-b="3">
+        <image wx-if="{{playingId!=='3'}}" src="../assets/images/icon_play.png" class="ctrl" mode="widthFix"/>
+        <image wx-if="{{playingId==='3'}}" src="../assets/images/icon_stop.png" class="ctrl" mode="widthFix"/>
+        <text>收听好友祝福</text>
+        </view>
+    </view>
+  </view>
+  <view class="tip">小伙伴选对音频即可获得随机红包</view>
+  <view class="check-btn" bindtap="submit">确定</view>
+</view>

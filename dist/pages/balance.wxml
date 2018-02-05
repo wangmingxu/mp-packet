@@ -1,0 +1,16 @@
+
+  <wxs module="moneyFormat" src="../filter/moneyFormat.wxs"/>
+  <image src="../assets/images/top.png" class="top" mode="widthFix"/>
+  <view class="card">
+    <image src="../assets/images/logo-balance.png" class="logo" bindlongpress="opendebug"/>
+    <view class="balance-remark">账户余额(元)</view>
+    <view class="balance-num">{{moneyFormat.getYuan(userMoney)}}</view>
+    <view class="withdrawal-remark">提现金额</view>
+    <view class="withdrawal-iptWrapper">
+        <text class="icon">¥</text>
+        <input placeholder="请输入提现金额" placeholder-class="input-placeholder" type="digit"/>
+    </view>
+    <view class="tip">提现到微信钱包,<text class="all" bindtap="withdrawalAll">全部提现</text></view>
+    <button class="btn" bindtap="submit">提现</button>
+    <view class="time">1-2个工作日到账</view>
+</view>

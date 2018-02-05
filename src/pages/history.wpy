@@ -1,0 +1,189 @@
+<style lang="less">
+page{
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+scroll-view{
+  // height: 100%;
+}
+swiper{
+  flex: 1;
+}
+.dashboard {
+  &-bg {
+    width: 100%;
+    display: block;
+  }
+}
+.avatar {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 150rpx;
+  height: 150rpx;
+  border-radius: 50% 50%;
+  top: 47rpx;
+  border: 5rpx solid #ffffff;
+}
+.total {
+  position: absolute;
+  top: 315rpx;
+  width: 100%;
+  display: flex;
+  .money,
+  .count {
+    flex: 1;
+    text-align: center;
+    color: #ffffff;
+    .num {
+      font-size: 48rpx;
+      font-weight: bold;
+    }
+    .remark {
+      font-size: 24rpx;
+    }
+  }
+}
+.divider {
+  width: 1px;
+  height: 78rpx;
+  position: absolute;
+  top: 320rpx;
+  background-color: #ffffff;
+  left: 50%;
+  transform: translateX(-50%);
+}
+.history-list {
+  .item {
+    padding: 10rpx 28rpx;
+    background-color: #ffffff;
+    overflow: hidden;
+    line-height: 40rpx;
+    margin-bottom: 10rpx;
+    box-shadow: 0px 3rpx 2rpx #e9e9e9;
+    .left {
+      float: left;
+    }
+    .right {
+      float: right;
+      text-align: right;
+    }
+    .name,
+    .money {
+      font-size: 26rpx;
+      color: #565656;
+    }
+    .date,
+    .count {
+      font-size: 24rpx;
+      color: #b5b3b3;
+    }
+  }
+}
+</style>
+
+<template>
+  <wxs module="moneyFormat" src="../filter/moneyFormat.wxs"></wxs>
+  <tab :list.sync="tabList" :current.sync="currentTab"></tab>
+  <swiper bindchange="tabContentChange" current="{{currentTab}}">
+  <block wx:for="{{tabList}}" wx:key="{{index}}">
+    <swiper-item>
+      <view style="display:flex;flex-direction: column;height:100%">
+        <scroll-view  scroll-y style="height: 1px;flex:1">
+      <view class="dashboard">
+        <image class="dashboard-bg" src="../assets/images/bg-record.png"  mode="widthFix"></image>
+        <image src="{{userInfo.avatarUrl}}" class="avatar"></image>
+        <view class="total">
+            <view class="money">
+                <view class="num">{{index>0?moneyFormat.getYuan(receiveLog.money):moneyFormat.getYuan(sendLog.money)}}</view>
+                <view class="remark">金额(元)</view>
+            </view>
+            <view class="count">
+                <view class="num">{{index>0?receiveLog.number:sendLog.number}}</view>
+                <view class="remark">数量(个)</view>
+            </view>
+        </view>
+        <view class="divider"></view>
+      </view>
+      <view class="history-list">
+          <view class="item"  wx:for="{{index>0?receiveLog.list:sendLog.list}}" wx:key="{{index}}" bindtap="toSharePage({{item.id}})">
+              <view class="left">
+                <view class="name">{{item.wish||item.senderName}}</view>
+                <view class="count" wx-if="{{item.number}}">{{item.number-item.surplusNumber}}/{{item.number}}</view>
+              </view>
+              <view class="right">
+                <view class="money">{{moneyFormat.getYuan(item.money)}}元</view>
+                <view class="date">{{item.createTime}}</view>
+              </view>
+          </view>
+      </view>
+        </scroll-view>   
+      </view>   
+    </swiper-item>
+  </block>
+</swiper>
+</template>
+
+<script>
+import wepy from 'wepy'
+import promisify, { sleep } from '../utils/promisify'
+import requestPromise from '../utils/request'
+import Tab from '../components/tab'
+import { requestBaseUrl } from '../constant'
+
+export default class History extends wepy.page {
+  onPullDownRefresh(){
+    // this.loadData().then(()=>{
+        wx.stopPullDownRefresh();
+    // });
+  }
+  config = {}
+  components = {
+    tab: Tab
+  }
+  data = {
+    tabList: [{ id:1,text: '我发出的' }, { id:2,text: '我收到的' }],
+    currentTab: 0,
+    sendLog: {},
+    receiveLog: {},
+  }
+  methods = {
+    tabContentChange: (e)=> {
+      this.currentTab = e.detail.current;
+    },
+    toSharePage: (id)=>{
+      if(id){
+        wx.navigateTo({ url: `share?id=${id}` });
+      }
+    }
+  }
+
+  events = {
+    tabChange: index => {
+      this.currentTab = index;
+    },
+  }
+
+  async onLoad() {
+    const userInfo = await this.$parent.getUserInfo()
+    this.setData({ userInfo })
+  }
+
+  async onShow() {
+    const { data } = await promisify(wx.getStorage, { key: 'signInfo' })
+    const luckyMoneySend = await requestPromise({
+      url: `${requestBaseUrl}/loadSendLog`,
+      data,
+    })
+    this.sendLog = luckyMoneySend.data;
+    this.$apply();
+    const luckyMoneyReceive = await requestPromise({
+      url: `${requestBaseUrl}/loadReceiveLog`,
+      data,
+    })
+    this.receiveLog = luckyMoneyReceive.data;
+    this.$apply();
+  }
+}
+</script>

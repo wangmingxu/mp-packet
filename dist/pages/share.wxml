@@ -1,0 +1,10 @@
+
+  <view>
+      <image src="{{imgUrl}}" class="share-image" mode="widthFix"/>
+      <view class="operation">
+        <button class="share btn" bindtap="share" open-type="share">转发到好友或群聊</button>
+        <button class="save btn" bindtap="save">生成朋友圈分享图</button>
+        <view class="try" bindtap="toPacketPage">我也试一试→ </view>
+      </view>
+      <canvas canvas-id="poster" class="share-canvas" wx-if="{{!transFinish}}"/>
+  </view>

@@ -1,10 +1,30 @@
 
-  <!-- <view>
-
-  </view> -->
-  
-  <view class="counter {{$counter1$style}}">
-    <button bindtap="$counter1$plus" size="mini">  +  </button>
-    <button bindtap="$counter1$minus" size="mini">  -  </button>
-    <text class="count {{$counter1$num > 55 ? 'red' : ''}} {{$counter1$num < 45 ? 'green' : ''}}" > {{$counter1$num}} </text>
+  <image src="../assets/images/top.png" class="top" mode="widthFix"/>
+  <view class="card" bindtouchend="stopRecord" touchcancel="stopRecord">
+    <image src="{{userInfo.avatarUrl}}" class="avatar"/>
+    <text class="nickName">{{userInfo.nickName}}</text>
+    <view class="feild order">
+      <label>选择祝福语</label>
+      <picker bindchange="bindPickerChange" range="{{wishArray}}" value="{{wishIndex}}">
+        <input value="{{wishText}}" placeholder="请选择一种祝福语" placeholder-class="input-placeholder" disabled="true"/>
+        <image src="../assets/images/more.png" class="more" bindtap="showPicker"/>
+      </picker>
+      <text class="txt">选择祝福语并录制你的新春祝福</text>
+    </view>
+    <view class="btn_record" bindlongpress="startRecord" bindtouchstart="getRecordAuth">
+      <image src="../assets/images/icon_record_2.png" mode="widthFix" class="icon_record"/>
+      <text wx-if="{{!recordFinish}}">长按录入你的语音祝福</text>
+      <text wx-if="{{recordFinish}}">录音完成,可长按重新录制</text>
+    </view>
+    <view class="feild money">
+      <label>赏金(元)</label>
+      <input placeholder="填写金额" placeholder-class="input-placeholder" type="digit" maxlength="6" bindinput="moneyInputHandler"/>
+    </view>
+    <view class="feild num">
+      <label>数量(个)</label>
+      <input placeholder="填写数量" placeholder-class="input-placeholder" type="number" maxlength="3" bindinput="numInputHandler"/>
+    </view>
+    <button class="make-btn" bindtap="makeVoice">生成语音红包</button>
+    <view class="tip">需支付¥0.00服务费，优先使用余额支付</view>
   </view>
+  <image src="../assets/images/recording.gif" mode="widthFix" class="recording" wx-if="{{recording}}"/>

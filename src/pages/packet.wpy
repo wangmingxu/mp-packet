@@ -1,0 +1,243 @@
+<style lang="less">
+page {
+  background-color: #f9715c;
+}
+.bg {
+  width: 100%;
+  position: absolute;
+  top: 39rpx;
+}
+.avatar {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 150rpx;
+  height: 150rpx;
+  border-radius: 50% 50%;
+  top: 50rpx;
+  border: 5rpx solid #ffffff;
+}
+.nickName {
+  position: absolute;
+  top: 215rpx;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 28rpx;
+  color: #ffffff;
+}
+.password {
+  width: 100%;
+  position: absolute;
+  text-align: center;
+  top: 285rpx;
+  font-size: 30rpx;
+  font-weight: bold;
+  color: #ffffff;
+}
+.audioList {
+  position: absolute;
+  top: 380rpx;
+  width: 100%;
+  .item {
+    display: flex;
+    align-items: center;
+    padding-left: 70rpx;
+    box-sizing: border-box;
+    margin-bottom: 32rpx;
+    .checkbox {
+      width: 60rpx;
+      height: 60rpx;
+      box-sizing: border-box;
+      border: 5rpx solid #fcae30;
+      margin-right: 33rpx;
+      border-radius: 50% 50%;
+      position: relative;
+      background-color: #ffffff;
+    }
+    .active {
+      &::after {
+        display: block;
+        position: absolute;
+        width: 30rpx;
+        height: 30rpx;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        background-color: #fcae30;
+        border-radius: 50% 50%;
+        content: '';
+      }
+    }
+    .audio {
+      text-indent: 150rpx;
+      border-radius: 5rpx;
+      font-size: 33rpx;
+      color: #ffffff;
+      font-weight: bold;
+      width: 480rpx;
+      position: relative;
+      line-height: 68rpx;
+      background-image: linear-gradient(
+        to right,
+        rgb(252, 195, 77) 1%,
+        rgb(251, 163, 61) 47%,
+        rgb(250, 131, 44) 100%
+      );
+      .ctrl {
+        width: 46rpx;
+        height: 46rpx;
+        position: absolute;
+        left: 20rpx;
+        top: 50%;
+        transform: translateY(-50%);
+      }
+    }
+  }
+}
+.tip {
+  position: absolute;
+  top: 682rpx;
+  text-align: center;
+  width: 100%;
+  font-size: 24rpx;
+  color: #ffffff;
+}
+.check-btn {
+  position: absolute;
+  top: 750rpx;
+  width: 390rpx;
+  line-height: 60rpx;
+  text-align: center;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #ffffff;
+  font-size: 30rpx;
+  color: #f96459;
+  border-radius: 30rpx;
+}
+</style>
+
+<template>
+<view class="page" wx-if="{{ready}}">
+  <image src="../assets/images/bg-packet.png" class="bg"></image>
+  <image src="{{luckyMoneyInfo.avatarUrl}}" class="avatar"></image>
+  <text class="nickName">{{luckyMoneyInfo.nickName}}</text>
+  <view class="password">我把红包藏在了祝福里</view>
+  <view class="audioList">
+    <view class="item">
+      <view class="checkbox {{chooseId==='1'?'active':null}}" bindtap="choose('1')"></view>
+      <view class="audio" bindtap="listen({{luckyMoneyInfo.audio1}},'1')">
+        <image wx-if="{{playingId!=='1'}}" src="../assets/images/icon_play.png" class="ctrl" mode="widthFix"></image>
+        <image wx-if="{{playingId==='1'}}" src="../assets/images/icon_stop.png" class="ctrl" mode="widthFix"></image>
+        <text>收听好友祝福</text>
+      </view>
+    </view>
+    <view class="item">
+      <view class="checkbox {{chooseId==='2'?'active':null}}" bindtap="choose('2')"></view>
+      <view class="audio" bindtap="listen({{luckyMoneyInfo.audio2}},'2')">
+        <image wx-if="{{playingId!=='2'}}" src="../assets/images/icon_play.png" class="ctrl" mode="widthFix"></image>
+        <image wx-if="{{playingId==='2'}}" src="../assets/images/icon_stop.png" class="ctrl" mode="widthFix"></image>
+        <text>收听好友祝福</text>
+        </view>
+    </view>
+    <view class="item">
+      <view class="checkbox {{chooseId==='3'?'active':null}}" bindtap="choose('3')"></view>
+      <view class="audio"  bindtap="listen({{luckyMoneyInfo.audio3}},'3')">
+        <image wx-if="{{playingId!=='3'}}" src="../assets/images/icon_play.png" class="ctrl" mode="widthFix"></image>
+        <image wx-if="{{playingId==='3'}}" src="../assets/images/icon_stop.png" class="ctrl" mode="widthFix"></image>
+        <text>收听好友祝福</text>
+        </view>
+    </view>
+  </view>
+  <view class="tip">小伙伴选对音频即可获得随机红包</view>
+  <view class="check-btn" bindtap="submit">确定</view>
+</view>
+</template>
+
+<script>
+import wepy from 'wepy'
+import promisify, { sleep } from '../utils/promisify'
+import { requestBaseUrl } from '../constant'
+import requestPromise from '../utils/request'
+
+export default class Packet extends wepy.page {
+  onPullDownRefresh(){
+    // this.loadData().then(()=>{
+        wx.stopPullDownRefresh();
+    // });
+  }
+  config = {}
+  components = {}
+  data = {
+    id: -1,
+    luckyMoneyInfo: {},
+    playingId: '',
+    chooseId: '',
+    ready: false,
+  }
+  methods = {
+    choose: id => {
+      this.chooseId = id
+    },
+    listen: (url, id) => {
+      this.innerAudioContext.src = url
+      // this.innerAudioContext.src = 'http://ws.stream.qqmusic.qq.com/M500001VfvsJ21xFqb.mp3?guid=ffffffff82def4af4b12b3cd9337d5e7&uin=346897220&vkey=6292F51E1E384E061FF02C31F716658E5C81F5594D561F2E88B854E81CAAB7806D5E4F103E55D33C16F3FAC506D1AB172DE8600B37E43FAD&fromtag=46'
+      this.innerAudioContext.play()
+      this.playingId = id
+    },
+    submit: async () => {
+      if (!this.chooseId) {
+        wx.showModal({
+          title: '温馨提示',
+          content: '请先选择答案',
+          showCancel: false
+        })
+        return false
+      }
+      const { data } = await promisify(wx.getStorage, { key: 'signInfo' })
+      const Result = await requestPromise({
+        url: `${requestBaseUrl}/snatchLuckyMoney`,
+        data: Object.assign(data, {
+          answer: this.chooseId,
+          id: this.id
+        })
+      })
+      wx.redirectTo({ url: `result?id=${this.id}` })
+    }
+  }
+
+  events = {}
+  async onLoad(options) {
+    const { data: scene } = await promisify(wx.getStorage, { key: 'scene' })
+    this.id = options.id || decodeURIComponent(scene);
+    console.log(options.id);
+    const userInfo = await this.$parent.getUserInfo()
+    this.setData({ userInfo })
+    this.innerAudioContext = wx.createInnerAudioContext()
+    this.innerAudioContext.onPlay(() => {
+      console.log('开始播放')
+    })
+    this.innerAudioContext.onError(res => {
+      console.log(res.errMsg)
+      console.log(res.errCode)
+    })
+    this.innerAudioContext.onEnded(res => {
+      this.playingId = '';
+      this.$apply();
+    })
+    const { data } = await promisify(wx.getStorage, { key: 'signInfo' })
+    const luckyMoneyRst = await requestPromise({
+      url: `${requestBaseUrl}/loadLuckyMoney`,
+      data: Object.assign(data, { id: this.id }) //todo
+    })
+    this.luckyMoneyInfo = luckyMoneyRst.data
+    this.$apply()
+    if(this.luckyMoneyInfo.snatchStatus!==0){
+      wx.redirectTo({ url: `result?id=${this.id}` })
+    }else{
+      this.ready = true
+      this.$apply()
+    }
+  }
+}
+</script>

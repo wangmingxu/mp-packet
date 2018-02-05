@@ -1,30 +1,341 @@
 <style lang="less">
-.userinfo {
+.avatar {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 150rpx;
+  height: 150rpx;
+  border-radius: 50% 50%;
+  top: -75rpx;
+  border: 5rpx solid #ffffff;
+}
+.nickName {
+  position: absolute;
+  top: 90rpx;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 24rpx;
+}
+.btn_record {
+  border-radius: 5rpx;
+  background-image: linear-gradient(
+    to right,
+    rgb(252, 195, 77) 1%,
+    rgb(251, 158, 61) 47%,
+    rgb(250, 121, 44) 100%
+  );
+  position: absolute;
+  left: 50%;
+  top: 245rpx;
+  transform: translateX(-50%);
+  width: 600rpx;
+  height: 60rpx;
+  z-index: 61;
+  line-height: 60rpx;
+  color: #fff;
+  font-size: 24rpx;
+  font-weight: bold;
+  text-indent: 80rpx;
+  box-shadow: 3rpx 3rpx 3rpx rgb(252, 195, 77);
+}
+.icon_record {
+  position: absolute;
+  left: 30rpx;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 21rpx;
+}
+.order {
+  top: 140rpx;
+  label {
+    font-size: 30rpx;
+  }
+  input {
+    width: 100%;
+  }
+  .txt {
+    position: absolute;
+    top: 120%;
+    left: 160rpx;
+    color: #f96459;
+    font-size: 22rpx;
+  }
+}
+.money {
+  top: 330rpx;
+}
+.num {
+  top: 420rpx;
+}
+.feild {
   display: flex;
-  flex-direction: column;
-  align-items: center;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 600rpx;
+  height: 54rpx;
+  label {
+    font-size: 26rpx;
+    font-weight: bold;
+    line-height: 54rpx;
+    width: 140rpx;
+    color: #565656;
+    margin-right: 20rpx;
+    text-align: right;
+  }
+  picker {
+    flex: 1;
+  }
+  input {
+    flex: 1;
+    border-bottom: 1rpx solid #d5d5d5;
+    font-size: 28rpx;
+    height: 54rpx;
+    box-sizing: border-box;
+    // padding-left: 10rpx;
+  }
+}
+.input-placeholder {
+  font-size: 26rpx;
+  color: #b5b3b3;
+}
+.recording {
+  position: absolute;
+  top: 552rpx;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 200rpx;
+}
+.more {
+  position: absolute;
+  width: 28rpx;
+  height: 19rpx;
+  right: 0rpx;
+  top: 50%;
+  transform: translateY(-50%);
+  padding: 10px;
+  z-index: 20;
+}
+.make-btn {
+  text-align: center;
+  width: 525rpx;
+  line-height: 66rpx;
+  border-radius: 33rpx;
+  color: #ffffff;
+  font-size: 30rpx;
+  background-color: #f96d5b;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  top: 517rpx;
+  &::after {
+    border: none;
+  }
+}
+.tip {
+  font-size: 24rpx;
+  color: #b5b3b3;
+  text-align: center;
+  top: 630rpx;
+  position: absolute;
+  width: 100%;
 }
 </style>
 
 <template>
-  <!-- <view>
-
-  </view> -->
-  <counter1></counter1>
+  <image src="../assets/images/top.png" class="top" mode="widthFix"></image>
+  <view class="card" bindtouchend="stopRecord" touchcancel="stopRecord">
+    <image src="{{userInfo.avatarUrl}}" class="avatar"></image>
+    <text class="nickName">{{userInfo.nickName}}</text>
+    <view class="feild order">
+      <label>选择祝福语</label>
+      <picker bindchange="bindPickerChange" range="{{wishArray}}" value="{{wishIndex}}">
+        <input value="{{wishText}}" placeholder="请选择一种祝福语" placeholder-class="input-placeholder" disabled="true"/>
+        <image src="../assets/images/more.png" class="more" bindtap="showPicker"></image>
+      </picker>
+      <text class="txt">选择祝福语并录制你的新春祝福</text>
+    </view>
+    <view class="btn_record" bindlongpress="startRecord" bindtouchstart="getRecordAuth">
+      <image src="../assets/images/icon_record_2.png" mode="widthFix" class="icon_record"></image>
+      <text wx-if="{{!recordFinish}}">长按录入你的语音祝福</text>
+      <text wx-if="{{recordFinish}}">录音完成,可长按重新录制</text>
+    </view>
+    <view class="feild money">
+      <label>赏金(元)</label>
+      <input placeholder="填写金额" placeholder-class="input-placeholder" type="digit" maxlength="6" bindinput="moneyInputHandler"/>
+    </view>
+    <view class="feild num">
+      <label>数量(个)</label>
+      <input placeholder="填写数量" placeholder-class="input-placeholder" type="number" maxlength="3" bindinput="numInputHandler"/>
+    </view>
+    <button class="make-btn" bindtap="makeVoice">生成语音红包</button>
+    <view class="tip">需支付¥0.00服务费，优先使用余额支付</view>
+  </view>
+  <image src="../assets/images/recording.gif" mode="widthFix" class="recording" wx-if="{{recording}}"></image>
 </template>
 
 <script>
 import wepy from 'wepy'
-import Counter from 'counter';
+import promisify, { sleep } from '../utils/promisify'
+import requestPromise from '../utils/request'
+import { requestBaseUrl } from '../constant'
+import NP from 'number-precision'
 
 export default class Index extends wepy.page {
-    config = {};
-    components = {counter1: Counter};
+  onPullDownRefresh() {
+    // this.loadData().then(()=>{
+    wx.stopPullDownRefresh()
+    // });
+  }
+  config = {}
+  components = {}
+  async onLoad() {
+    const userInfo = await this.$parent.getUserInfo()
+    this.setData({ userInfo })
+    const { authSetting } = await promisify(wx.getSetting)
+    if (!authSetting['scope.record']) {
+      console.log('录音未授权')
+      await promisify(wx.authorize, { scope: 'scope.record' })
+      console.log('录音授权成功')
+    }
+    // const { data: scene } = await promisify(wx.getStorage, { key: 'scene' })
+    // console.log(scene);
+  }
+  onReady() {
+    this.recorderManager = wx.getRecorderManager()
+    this.recorderManager.onStart(ret => {
+      // console.log('开始录音')
+      this.recording = true
+      this.$apply()
+    })
+    this.recorderManager.onStop(ret => {
+      if (this.recording) {
+        this.recording = false
+        this.recordFinish = true
+        this.$apply()
+        wx.showToast({
+          title: '录音完成',
+          icon: 'success'
+        })
+        promisify(wx.uploadFile, {
+          url: `${requestBaseUrl}/uploadAudio`,
+          filePath: ret.tempFilePath,
+          name: 'file'
+        }).then(({ data }) => {
+          this.file = data
+          this.$apply()
+        })
+      }
+      // wx.showToast({ title: ret.tempFilePath })
+    })
+    this.recorderManager.onFrameRecorded(ret => {
+      console.log(ret)
+    })
+  }
+  data = {
+    recording: false,
+    recordFinish: false,
+    wishArray: [
+      '大吉大利，今晚吃鸡',
+      '天冷了注意保暖，多穿一条秋裤哟',
+      '2018年要身体倍儿棒，吃饭倍儿香',
+      '新的一年好好照顾自己，别太累了',
+      '愿我所爱皆顺意，愿爱我之人皆如意',
+      '今年一起脱单脱贫不脱发吧',
+      '年底再忙，也要记得休息',
+      '简简单单，健康快乐幸福就好',
+      '我新年最大的愿望是升职加薪',
+      '2018年，赐你一个赋予别人开心的超能力'
+    ],
+    wishIndex: 0,
+    wishText: '',
+    file: '',
+    luckyMoney: 0,
+    number: 0,
+    id: -1 //红包id
+  }
+  methods = {
+    async getRecordAuth() {
+      const { authSetting } = await promisify(wx.getSetting)
+      if (!authSetting['scope.record']) {
+        await promisify(wx.showModal, {
+          title: '用户未授权',
+          content:
+            '如需正常使用录音功能，请按确定并在授权管理中选中“录音功能”，然后按确定。最后重新进入小程序即可正常使用',
+          showCancel: false
+        })
+        await promisify(wx.openSetting)
+        return false
+      }
+    },
+    startRecord() {
+      this.recorderManager.start({ format: 'mp3', duration: 10000 })
+    },
+    stopRecord() {
+      this.recorderManager.stop()
+    },
+    bindPickerChange: e => {
+      console.log('picker发送选择改变，携带值为', e.detail.value)
+      this.wishIndex = e.detail.value
+      this.wishText = this.wishArray[e.detail.value]
+    },
+    makeVoice: async () => {
+      const { data } = await promisify(wx.getStorage, { key: 'signInfo' })
+      await promisify(wx.showLoading)
+      try {
+        const makeResult = await requestPromise({
+          url: `${requestBaseUrl}/luckyMoney`,
+          data: Object.assign(data, {
+            file: this.file,
+            luckyMoney: NP.times(this.luckyMoney, 100),
+            number: this.number,
+            wish: this.wishText
+          })
+        })
+        this.id = makeResult.data
+        this.$apply()
+        wx.hideToast()
+      } catch (e) {
+        if (e.status === 6) {
+          this.id = e.data.id
+          this.$apply()
+          try {
+            await promisify(wx.requestPayment, e.data)
+            await this.checkPayStatus()
+          } catch (error) {
+            wx.hideToast()
+            return false
+          }
+        } else {
+          wx.hideToast()
+          return false
+        }
+      }
+      wx.redirectTo({ url: `share?id=${this.id}` })
+    },
+    moneyInputHandler: e => {
+      if (+e.detail.value >= 1000) {
+        this.luckyMoney = 999
+        return '999'
+      }
+      this.luckyMoney = +e.detail.value
+    },
+    numInputHandler: e => {
+      this.number = +e.detail.value
+    }
+  }
 
-    data = {};
-    methods = {};
+  events = {}
 
-    events = {};
-    onLoad() {};
+  checkPayStatus = async () => {
+    const checkResult = await requestPromise({
+      url: `${requestBaseUrl}/loadLuckyMoneyStatus`,
+      data: { id: this.id }
+    })
+    if (checkResult.data !== 0) {
+      await sleep(1000)
+      await this.checkPayStatus()
+    }
+  }
 }
 </script>

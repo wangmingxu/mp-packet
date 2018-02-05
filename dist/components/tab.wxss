@@ -1,0 +1,1 @@
+.common-tab{display:flex}.tab-item{flex:1;border-radius:0;color:#565656;background-color:#ffffff;font-size:28rpx;height:80rpx;line-height:80rpx}.tab-item::after{border:none}.tab-item.active{background-color:#ebebeb;font-weight:bold;font-size:28rpx}

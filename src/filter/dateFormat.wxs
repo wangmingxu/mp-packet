@@ -1,0 +1,11 @@
+var DateFr = {
+  getTime: function(dateStr) {
+    if(typeof(dateStr)!=='string') return '';
+    var time = dateStr.split(' ')[1];
+    return time
+  }
+}
+
+module.exports = {
+    getTime: DateFr.getTime
+}

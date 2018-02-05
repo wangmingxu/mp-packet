@@ -1,0 +1,43 @@
+
+<wxs module="moneyFormat" src="../filter/moneyFormat.wxs"/>
+<wxs module="dateFormat" src="../filter/dateFormat.wxs"/>
+<view class="dashboard">
+    <image src="../assets/images/bg-result.png" class="dashboard-bg"/>
+    <image src="{{luckyMoneyResult.avatarUrl}}" class="avatar"/>
+    <text class="nickName">{{luckyMoneyResult.nickName}}</text>
+    <view class="password">{{luckyMoneyResult.wish}}</view>
+    <!-- <view class="true-tip" wx-if="{{luckyMoneyResult.myMoney>0}}">答对了!</view> -->
+    <view class="false-tip" wx-if="{{luckyMoneyResult.myMoney<=0&&luckyMoneyResult.snatchStatus===1}}">很可惜,答错了!</view>
+    <view class="bounty" wx-if="{{luckyMoneyResult.myMoney>0}}"><text>{{moneyFormat.getYuan(luckyMoneyResult.myMoney)}}</text>元</view>
+    <view class="tip" wx-if="{{luckyMoneyResult.myMoney>0}}">已存入零钱，可用于发红包</view>
+    <!-- <image src="../assets/images/teki.png" class="fail" wx-if="{{luckyMoneyResult.myMoney<=0&&luckyMoneyResult.snatchStatus===1}}"></image> -->
+    <!-- <image src="../assets/images/teki2.png" class="gone"  wx-if="{{luckyMoneyResult.myMoney<=0&&luckyMoneyResult.snatchStatus===0}}"></image> -->
+    <view class="operation">
+        <view class="make-packet" bindtap="navToMakePage">
+            <image src="../assets/images/icon_packet.png" mode="widthFix"/>
+            发红包
+        </view>
+        <button open-type="share" class="share" bindtap="share">
+            <image src="../assets/images/icon_share.png" mode="widthFix"/>
+            去转发
+        </button>            
+    </view>
+</view>
+<view id="total" class="scroll-view-item total">
+    共{{moneyFormat.getYuan(luckyMoneyResult.money)}}元，领取{{luckyMoneyResult.number-luckyMoneyResult.surplusNumber}}/{{luckyMoneyResult.number}}个
+</view>
+<scroll-view scroll-y style="height: 1px;">
+    <view class="list">
+        <view class="item"  wx:for="{{luckyMoneyResult.list}}" wx:key="{{index}}">
+            <image src="{{item.avatarUrl}}" class="item-avatar"/>
+            <view class="left">
+                <view class="sendName">{{item.nickName}}</view>
+                <view class="date">{{dateFormat.getTime(item.createTime)}}</view>
+            </view>
+            <view class="right">
+                <view class="money">{{moneyFormat.getYuan(item.money)}}元</view>
+                <view class="best" wx-if="{{item.nickName === best}}"><image src="../assets/images/icon_best.png" class="best-icon"/>手气最佳</view>
+            </view>
+        </view>                                
+    </view>
+</scroll-view>

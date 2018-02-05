@@ -1,0 +1,190 @@
+<style lang="less">
+.share-canvas {
+  margin-top: 1000rpx;
+  width: 750px;
+  height: 1254px;
+}
+.share-image {
+  // position: absolute;
+  width: 100%;
+}
+.operation {
+  width: 685rpx;
+  height: 310rpx;
+  text-align: center;
+  position: absolute;
+  top: 770rpx;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #ffffff;
+  border-radius: 10rpx;
+  padding: 45rpx 0rpx;
+  box-sizing: border-box;
+  .btn {
+    width: 620rpx;
+    line-height: 75rpx;
+    font-size: 36rpx;
+    margin: 0 auto 25rpx;
+  }
+  .share {
+    background-color: #1aac19;
+    color: #ffffff;
+  }
+  .try {
+    text-align: center;
+    font-size: 30rpx;
+    color: #878787;
+    font-weight: bold;
+    padding-top: 10rpx;
+  }
+}
+</style>
+
+<template>
+  <view>
+      <image src="{{imgUrl}}" class="share-image" mode="widthFix"></image>
+      <view class="operation">
+        <button class="share btn" bindtap="share" open-type="share">转发到好友或群聊</button>
+        <button class="save btn" bindtap="save">生成朋友圈分享图</button>
+        <view class="try" bindtap="toPacketPage">我也试一试→ </view>
+      </view>
+      <canvas canvas-id="poster" class="share-canvas" wx-if="{{!transFinish}}"></canvas>
+  </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+import promisify, { sleep } from '../utils/promisify'
+import { requestBaseUrl } from '../constant'
+
+export default class Share extends wepy.page {
+  onPullDownRefresh() {
+    // this.loadData().then(()=>{
+    wx.stopPullDownRefresh()
+    // });
+  }
+  config = {}
+  components = {}
+  onShareAppMessage(options) {
+    console.log(options.from)
+    if (options.from === 'button') {
+      // 来自页面内转发按钮
+      console.log(options.target)
+    }
+    return {
+      title: '口快有，口慢无',
+      path: `/pages/packet?id=${this.id}`,
+      success: function(res) {
+        // 转发成功
+      },
+      fail: function(res) {
+        // 转发失败
+      }
+    }
+  }
+  async onLoad(options) {
+    this.id = options.id
+    this.userInfo = await this.$parent.getUserInfo()
+    this.$apply()
+    await promisify(wx.showLoading, {
+      mask: true,
+      title: '正在生成...'
+    })
+    try {
+      await this.makePic()
+      wx.hideLoading()
+    } catch (error) {
+      wx.hideLoading()
+    }
+  }
+  data = {
+    id: -1,
+    userInfo: {},
+    transFinish: false,
+    imgUrl: ''
+  }
+  methods = {
+    share: () => {},
+    save: async () => {
+      await promisify(wx.saveImageToPhotosAlbum, { filePath: this.imgUrl })
+    },
+    toPacketPage: () => {
+      wx.navigateTo({ url: `packet?id=${this.id}` })
+    }
+  }
+
+  events = {}
+
+  makePic = async () => {
+    const ctx = wx.createCanvasContext('poster')
+    const avatarUrl = `${this.data.userInfo.avatarUrl.substr(
+      0,
+      this.data.userInfo.avatarUrl.length - 1
+    )}132`
+    const fetchBackground = promisify(wx.getImageInfo, {
+      src: 'https://bizadv.lizhi.fm/static/2018/voice_app/share.png'
+      // src: '../assets/images/share.png'
+    })
+    const fetchAvatar = promisify(wx.getImageInfo, {
+      src: avatarUrl
+    })
+    const QrcodeUrl = `${requestBaseUrl}/loadQrcode?scene=${this.id ||
+      '1031'}&page=${encodeURIComponent('pages/packet')}`
+    const fetchQrcode = promisify(wx.getImageInfo, {
+      src: QrcodeUrl
+    })
+    const [
+      { path: bg },
+      { path: avatar },
+      { path: qrcode }
+    ] = await Promise.all([fetchBackground, fetchAvatar, fetchQrcode])
+    //绘制底图
+    ctx.drawImage(bg, 0, 0, 750, 1254, 0, 0, 750, 1254)
+    //绘制昵称
+    ctx.setTextAlign('center')
+    ctx.setFontSize(32)
+    ctx.setFillStyle('#ffffff')
+    ctx.fillText(`${this.data.userInfo.nickName}发了一个语音口令`, 375, 285)
+    //绘制头像
+    ctx.save()
+    ctx.setStrokeStyle('#ffffff')
+    ctx.beginPath()
+    ctx.setLineWidth(8)
+    ctx.arc(300 + 150 / 2, 80 + 150 / 2, 75, 0, 2 * Math.PI)
+    ctx.stroke()
+    ctx.clip()
+    ctx.drawImage(avatar, 0, 0, 132, 132, 300, 80, 150, 150)
+    ctx.restore()
+    //绘制二维码
+    ctx.save()
+    ctx.setStrokeStyle('#fdba54')
+    ctx.beginPath()
+    ctx.setLineWidth(8)
+    ctx.arc(375, 550, 287 / 2, 0, 2 * Math.PI)
+    ctx.stroke()
+    ctx.clip()
+    ctx.drawImage(qrcode, 0, 0, 300, 300, 230, 550 - 287 / 2, 287, 287)
+    ctx.restore()
+    //渲染到画布上
+    const drawPromise = new Promise((resolve, reject) => {
+      ctx.draw(false, () => {
+        resolve()
+      })
+    })
+    await Promise.race([drawPromise, sleep(500)])
+    const { tempFilePath } = await promisify(wx.canvasToTempFilePath, {
+      canvasId: 'poster',
+      x: 0,
+      y: 0,
+      width: 750,
+      height: 1254,
+      destWidth: 750,
+      destHeight: 1254
+    })
+    // await promisify(wx.previewImage, { urls: [tempFilePath] })
+    this.transFinish = true
+    this.imgUrl = tempFilePath
+    this.$apply()
+  }
+}
+</script>

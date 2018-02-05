@@ -1,0 +1,2 @@
+@import "./../components/tab.wxss";
+.dashboard-bg{width:100%}

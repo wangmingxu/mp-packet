@@ -1,0 +1,11 @@
+var MoneyFr = {
+  getYuan: function(cent) {
+    if(typeof(cent)==='undefined') return 0;
+    var yuan = (cent / 100).toFixed(2)
+    return yuan
+  }
+}
+
+module.exports = {
+  getYuan: MoneyFr.getYuan
+}
