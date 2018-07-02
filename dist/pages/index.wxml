@@ -9,11 +9,12 @@
         <input value="{{wishText}}" placeholder="请选择一种祝福语" placeholder-class="input-placeholder" disabled="true"/>
         <image src="../assets/images/more.png" class="more" bindtap="showPicker"/>
       </picker>
-      <text class="txt">选择祝福语并录制你的新春祝福</text>
+      <text class="txt">请将你的祝福录制成语音</text>
     </view>
+    <view class="btn_record_blur"/>
     <view class="btn_record" bindlongpress="startRecord" bindtouchstart="getRecordAuth">
       <image src="../assets/images/icon_record_2.png" mode="widthFix" class="icon_record"/>
-      <text wx-if="{{!recordFinish}}">长按录入你的语音祝福</text>
+      <text wx-if="{{!recordFinish}}">长按录入你所选的祝福语</text>
       <text wx-if="{{recordFinish}}">录音完成,可长按重新录制</text>
     </view>
     <view class="feild money">
@@ -24,7 +25,8 @@
       <label>数量(个)</label>
       <input placeholder="填写数量" placeholder-class="input-placeholder" type="number" maxlength="3" bindinput="numInputHandler"/>
     </view>
-    <button class="make-btn" bindtap="makeVoice">生成语音红包</button>
+    <button class="make-btn" bindtap="makeVoice">生成语音口令</button>
+    <view class="make-btn-blur"/>
     <view class="tip">需支付¥0.00服务费，优先使用余额支付</view>
   </view>
   <image src="../assets/images/recording.gif" mode="widthFix" class="recording" wx-if="{{recording}}"/>

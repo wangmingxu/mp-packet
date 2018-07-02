@@ -86,42 +86,44 @@ scroll-view {
   top: 315rpx;
   left: 110rpx;
 }
-.operation {
+.make-packet{
   position: absolute;
   top: 455rpx;
-  display: flex;
-  padding: 0 232rpx;
-  align-items: center;
-  justify-content: space-between;
-  font-size: 24rpx;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 425rpx;
+  line-height: 52rpx;
+  border-radius: 26rpx;
+  background-image: linear-gradient(rgb(252,195,77) 1%, rgb(251,163,61) 47%, rgb(250,131,44) 100%);
+  font-size: 36rpx;
   color: #ffffff;
-  width: 100%;
-  box-sizing: border-box;
-  line-height: 36rpx;
-  text-indent: 10rpx;
-  z-index: 20;
-  .make-packet {
-    image {
-      width: 36rpx;
-      display: block;
-      float: left;
-    }
+  image{
+    width: 44rpx;
+    display: block;
+    float: left;
+    margin: 4rpx 15rpx 0 120rpx;
   }
-  .share {
+}
+.share {
     padding: 0rpx;
     font-size: 24rpx;
     color: #ffffff;
-    line-height: 36rpx;
+    line-height: 37rpx;
     background: none;
+    position: absolute;
+    top: 32rpx;
+    right: 0rpx;
+    width: 155rpx;
+    text-align: left;
     &::after{
         border: none;
     }
     image {
-      width: 28rpx;
+      width: 33rpx;
       display: block;
       float: left;
+      margin-right: 10rpx;
     }
-  }
 }
 .total {
   line-height: 70rpx;
@@ -188,19 +190,17 @@ scroll-view {
     <!-- <view class="true-tip" wx-if="{{luckyMoneyResult.myMoney>0}}">答对了!</view> -->
     <view class="false-tip" wx-if="{{luckyMoneyResult.myMoney<=0&&luckyMoneyResult.snatchStatus===1}}">很可惜,答错了!</view>
     <view class="bounty" wx-if="{{luckyMoneyResult.myMoney>0}}"><text>{{moneyFormat.getYuan(luckyMoneyResult.myMoney)}}</text>元</view>
-    <view class="tip" wx-if="{{luckyMoneyResult.myMoney>0}}">已存入零钱，可用于发红包</view>
+    <view class="tip" wx-if="{{luckyMoneyResult.myMoney>0}}">已存入零钱，可用于发口令</view>
     <!-- <image src="../assets/images/teki.png" class="fail" wx-if="{{luckyMoneyResult.myMoney<=0&&luckyMoneyResult.snatchStatus===1}}"></image> -->
     <!-- <image src="../assets/images/teki2.png" class="gone"  wx-if="{{luckyMoneyResult.myMoney<=0&&luckyMoneyResult.snatchStatus===0}}"></image> -->
-    <view class="operation">
-        <view class="make-packet" bindtap="navToMakePage">
-            <image src="../assets/images/icon_packet.png" mode="widthFix"></image>
-            发红包
-        </view>
-        <button open-type="share" class="share" bindtap="share">
-            <image src="../assets/images/icon_share.png" mode="widthFix"></image>
-            去转发
-        </button>            
+    <view class="make-packet" bindtap="navToMakePage">
+      <image src="../assets/images/icon_packet.png" mode="widthFix"></image>
+      发口令
     </view>
+    <button open-type="share" class="share" bindtap="share">
+        <image src="../assets/images/icon_share.png" mode="widthFix"></image>
+        去转发
+    </button>
 </view>
 <view id="total" class="scroll-view-item total">
     共{{moneyFormat.getYuan(luckyMoneyResult.money)}}元，领取{{luckyMoneyResult.number-luckyMoneyResult.surplusNumber}}/{{luckyMoneyResult.number}}个
@@ -236,7 +236,7 @@ export default class Result extends wepy.page {
       console.log(options.target)
     }
     return {
-      title: '口快有，口慢无',
+      title: '我有个语音口令派给你',
       path: `/pages/packet?id=${this.id}`,
       success: function(res) {
         // 转发成功

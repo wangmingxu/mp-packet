@@ -99,7 +99,8 @@ page {
   top: 682rpx;
   text-align: center;
   width: 100%;
-  font-size: 24rpx;
+  font-size: 28rpx;
+  font-weight: bold;
   color: #ffffff;
 }
 .check-btn {
@@ -122,7 +123,7 @@ page {
   <image src="../assets/images/bg-packet.png" class="bg"></image>
   <image src="{{luckyMoneyInfo.avatarUrl}}" class="avatar"></image>
   <text class="nickName">{{luckyMoneyInfo.nickName}}</text>
-  <view class="password">我把红包藏在了祝福里</view>
+  <view class="password">猜猜哪条是我的祝福语音</view>
   <view class="audioList">
     <view class="item">
       <view class="checkbox {{chooseId==='1'?'active':null}}" bindtap="choose('1')"></view>
@@ -149,7 +150,7 @@ page {
         </view>
     </view>
   </view>
-  <view class="tip">小伙伴选对音频即可获得随机红包</view>
+  <view class="tip">猜对即可领随机赏金</view>
   <view class="check-btn" bindtap="submit">确定</view>
 </view>
 </template>
@@ -161,9 +162,9 @@ import { requestBaseUrl } from '../constant'
 import requestPromise from '../utils/request'
 
 export default class Packet extends wepy.page {
-  onPullDownRefresh(){
+  onPullDownRefresh() {
     // this.loadData().then(()=>{
-        wx.stopPullDownRefresh();
+    wx.stopPullDownRefresh()
     // });
   }
   config = {}
@@ -173,7 +174,7 @@ export default class Packet extends wepy.page {
     luckyMoneyInfo: {},
     playingId: '',
     chooseId: '',
-    ready: false,
+    ready: false
   }
   methods = {
     choose: id => {
@@ -208,9 +209,8 @@ export default class Packet extends wepy.page {
 
   events = {}
   async onLoad(options) {
-    const { data: scene } = await promisify(wx.getStorage, { key: 'scene' })
-    this.id = options.id || decodeURIComponent(scene);
-    console.log(options.id);
+    // const { data: scene } = await promisify(wx.getStorage, { key: 'scene' })
+    this.id = options.id || decodeURIComponent(options.scene)// todo
     const userInfo = await this.$parent.getUserInfo()
     this.setData({ userInfo })
     this.innerAudioContext = wx.createInnerAudioContext()
@@ -222,19 +222,19 @@ export default class Packet extends wepy.page {
       console.log(res.errCode)
     })
     this.innerAudioContext.onEnded(res => {
-      this.playingId = '';
-      this.$apply();
+      this.playingId = ''
+      this.$apply()
     })
     const { data } = await promisify(wx.getStorage, { key: 'signInfo' })
     const luckyMoneyRst = await requestPromise({
       url: `${requestBaseUrl}/loadLuckyMoney`,
-      data: Object.assign(data, { id: this.id }) //todo
+      data: Object.assign(data, { id: this.id }) // todo
     })
     this.luckyMoneyInfo = luckyMoneyRst.data
     this.$apply()
-    if(this.luckyMoneyInfo.snatchStatus!==0){
+    if (this.luckyMoneyInfo.snatchStatus !== 0) {
       wx.redirectTo({ url: `result?id=${this.id}` })
-    }else{
+    } else {
       this.ready = true
       this.$apply()
     }

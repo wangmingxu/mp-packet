@@ -26,6 +26,19 @@ swiper{
   top: 47rpx;
   border: 5rpx solid #ffffff;
 }
+.nickName{
+  position: absolute;
+  top: 215rpx;
+  width: 100%;
+  font-size: 24rpx;
+  color: #ffffff;
+  text-align: center;
+  .bold{
+    margin-left: 10rpx;
+    font-weight: bold;
+    font-size: 30rpx;
+  }
+}
 .total {
   position: absolute;
   top: 315rpx;
@@ -94,6 +107,7 @@ swiper{
       <view class="dashboard">
         <image class="dashboard-bg" src="../assets/images/bg-record.png"  mode="widthFix"></image>
         <image src="{{userInfo.avatarUrl}}" class="avatar"></image>
+        <view class="nickName">{{userInfo.nickName}}<text class="bold">{{index>0?'共收到':'共发出'}}</text></view>
         <view class="total">
             <view class="money">
                 <view class="num">{{index>0?moneyFormat.getYuan(receiveLog.money):moneyFormat.getYuan(sendLog.money)}}</view>

@@ -48,10 +48,10 @@ export default class extends wepy.app {
     window: {
       backgroundTextStyle: 'light',
       navigationBarBackgroundColor: '#fff',
-      navigationBarTitleText: 'WeChat',
+      navigationBarTitleText: '声财包',
       navigationBarTextStyle: 'black',
       backgroundColor: '#f6f6f6',
-      enablePullDownRefresh: true,
+      enablePullDownRefresh: true
     },
     tabBar: {
       list: [
@@ -63,7 +63,7 @@ export default class extends wepy.app {
         },
         {
           pagePath: 'pages/index',
-          text: '语音红包',
+          text: '语音口令',
           selectedIconPath: 'assets/images/icon_audio_active.png',
           iconPath: 'assets/images/icon_audio.png'
         },
@@ -91,22 +91,8 @@ export default class extends wepy.app {
     this.use('requestfix')
   }
 
-  onLaunch(options) {
-    this.setScene(options.scene)
-    this.getSystemInfo()
-  }
-
-  async onShow(options) {
-    console.log(options)
-    this.setScene(options.scene)
-  }
-
   async getSystemInfo() {
     await promisify(wx.getSystemInfo)
-  }
-
-  async setScene(scene) {
-    await promisify(wx.setStorage, { key: 'scene', data: scene })
   }
 
   async getUserInfo() {

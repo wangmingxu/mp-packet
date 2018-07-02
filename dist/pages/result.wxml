@@ -9,19 +9,17 @@
     <!-- <view class="true-tip" wx-if="{{luckyMoneyResult.myMoney>0}}">答对了!</view> -->
     <view class="false-tip" wx-if="{{luckyMoneyResult.myMoney<=0&&luckyMoneyResult.snatchStatus===1}}">很可惜,答错了!</view>
     <view class="bounty" wx-if="{{luckyMoneyResult.myMoney>0}}"><text>{{moneyFormat.getYuan(luckyMoneyResult.myMoney)}}</text>元</view>
-    <view class="tip" wx-if="{{luckyMoneyResult.myMoney>0}}">已存入零钱，可用于发红包</view>
+    <view class="tip" wx-if="{{luckyMoneyResult.myMoney>0}}">已存入零钱，可用于发口令</view>
     <!-- <image src="../assets/images/teki.png" class="fail" wx-if="{{luckyMoneyResult.myMoney<=0&&luckyMoneyResult.snatchStatus===1}}"></image> -->
     <!-- <image src="../assets/images/teki2.png" class="gone"  wx-if="{{luckyMoneyResult.myMoney<=0&&luckyMoneyResult.snatchStatus===0}}"></image> -->
-    <view class="operation">
-        <view class="make-packet" bindtap="navToMakePage">
-            <image src="../assets/images/icon_packet.png" mode="widthFix"/>
-            发红包
-        </view>
-        <button open-type="share" class="share" bindtap="share">
-            <image src="../assets/images/icon_share.png" mode="widthFix"/>
-            去转发
-        </button>            
+    <view class="make-packet" bindtap="navToMakePage">
+      <image src="../assets/images/icon_packet.png" mode="widthFix"/>
+      发口令
     </view>
+    <button open-type="share" class="share" bindtap="share">
+        <image src="../assets/images/icon_share.png" mode="widthFix"/>
+        去转发
+    </button>
 </view>
 <view id="total" class="scroll-view-item total">
     共{{moneyFormat.getYuan(luckyMoneyResult.money)}}元，领取{{luckyMoneyResult.number-luckyMoneyResult.surplusNumber}}/{{luckyMoneyResult.number}}个

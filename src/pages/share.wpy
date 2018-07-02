@@ -72,7 +72,7 @@ export default class Share extends wepy.page {
       console.log(options.target)
     }
     return {
-      title: '口快有，口慢无',
+      title: '我有个语音口令派给你',
       path: `/pages/packet?id=${this.id}`,
       success: function(res) {
         // 转发成功
@@ -138,14 +138,14 @@ export default class Share extends wepy.page {
       { path: avatar },
       { path: qrcode }
     ] = await Promise.all([fetchBackground, fetchAvatar, fetchQrcode])
-    //绘制底图
+    // 绘制底图
     ctx.drawImage(bg, 0, 0, 750, 1254, 0, 0, 750, 1254)
-    //绘制昵称
+    // 绘制昵称
     ctx.setTextAlign('center')
     ctx.setFontSize(32)
     ctx.setFillStyle('#ffffff')
-    ctx.fillText(`${this.data.userInfo.nickName}发了一个语音口令`, 375, 285)
-    //绘制头像
+    ctx.fillText(`${this.data.userInfo.nickName}来给你拜年啦`, 375, 285)
+    // 绘制头像
     ctx.save()
     ctx.setStrokeStyle('#ffffff')
     ctx.beginPath()
@@ -155,7 +155,7 @@ export default class Share extends wepy.page {
     ctx.clip()
     ctx.drawImage(avatar, 0, 0, 132, 132, 300, 80, 150, 150)
     ctx.restore()
-    //绘制二维码
+    // 绘制二维码
     ctx.save()
     ctx.setStrokeStyle('#fdba54')
     ctx.beginPath()
@@ -165,7 +165,7 @@ export default class Share extends wepy.page {
     ctx.clip()
     ctx.drawImage(qrcode, 0, 0, 300, 300, 230, 550 - 287 / 2, 287, 287)
     ctx.restore()
-    //渲染到画布上
+    // 渲染到画布上
     const drawPromise = new Promise((resolve, reject) => {
       ctx.draw(false, () => {
         resolve()

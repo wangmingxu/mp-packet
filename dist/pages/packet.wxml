@@ -3,7 +3,7 @@
   <image src="../assets/images/bg-packet.png" class="bg"/>
   <image src="{{luckyMoneyInfo.avatarUrl}}" class="avatar"/>
   <text class="nickName">{{luckyMoneyInfo.nickName}}</text>
-  <view class="password">我把红包藏在了祝福里</view>
+  <view class="password">猜猜哪条是我的祝福语音</view>
   <view class="audioList">
     <view class="item">
       <view class="checkbox {{chooseId==='1'?'active':null}}" bindtap="choose" data-wpychoose-a="1"/>
@@ -30,6 +30,6 @@
         </view>
     </view>
   </view>
-  <view class="tip">小伙伴选对音频即可获得随机红包</view>
+  <view class="tip">猜对即可领随机赏金</view>
   <view class="check-btn" bindtap="submit">确定</view>
 </view>

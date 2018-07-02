@@ -25,9 +25,8 @@
     rgb(250, 121, 44) 100%
   );
   position: absolute;
-  left: 50%;
+  left: 50rpx;
   top: 245rpx;
-  transform: translateX(-50%);
   width: 600rpx;
   height: 60rpx;
   z-index: 61;
@@ -36,7 +35,37 @@
   font-size: 24rpx;
   font-weight: bold;
   text-indent: 80rpx;
-  box-shadow: 3rpx 3rpx 3rpx rgb(252, 195, 77);
+  // &::after{
+  //   position: absolute;
+  //   left: 0rpx;
+  //   top: 0rpx;
+  //   background-image: linear-gradient(
+  //   to right,
+  //   rgb(252, 195, 77) 1%,
+  //   rgb(251, 158, 61) 47%,
+  //   rgb(250, 121, 44) 100%
+  //   );
+  //   border-radius: 5rpx;
+  //   width: 100%;
+  //   height: 100%;
+  //   filter: blur(10rpx);
+  //   content: '';
+  // }
+}
+.btn_record_blur{
+    position: absolute;
+    left: 60rpx;
+    top: 255rpx;
+    background-image: linear-gradient(
+    to right,
+    rgb(252, 195, 77) 1%,
+    rgb(251, 158, 61) 47%,
+    rgb(250, 121, 44) 100%
+    );
+    border-radius: 5rpx;
+    width: 590rpx;
+    height: 50rpx;
+    filter: blur(10rpx);
 }
 .icon_record {
   position: absolute;
@@ -123,14 +152,34 @@
   border-radius: 33rpx;
   color: #ffffff;
   font-size: 30rpx;
-  background-color: #f96d5b;
+  background-image: linear-gradient(
+    to right,
+    #f88460,
+    #f95e58
+  );
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
   top: 517rpx;
+  z-index: 60;
   &::after {
     border: none;
   }
+}
+.make-btn-blur{
+  left: 50%;
+  transform: translateX(-50%);
+  top: 527rpx;
+  width: 525rpx;
+  position: absolute;
+  background-image: linear-gradient(
+    to right,
+    #f88460,
+    #f95e58
+  );
+  border-radius: 28rpx;
+  height: 56rpx;
+  filter: blur(10rpx);
 }
 .tip {
   font-size: 24rpx;
@@ -153,11 +202,12 @@
         <input value="{{wishText}}" placeholder="请选择一种祝福语" placeholder-class="input-placeholder" disabled="true"/>
         <image src="../assets/images/more.png" class="more" bindtap="showPicker"></image>
       </picker>
-      <text class="txt">选择祝福语并录制你的新春祝福</text>
+      <text class="txt">请将你的祝福录制成语音</text>
     </view>
+    <view class="btn_record_blur"></view>
     <view class="btn_record" bindlongpress="startRecord" bindtouchstart="getRecordAuth">
       <image src="../assets/images/icon_record_2.png" mode="widthFix" class="icon_record"></image>
-      <text wx-if="{{!recordFinish}}">长按录入你的语音祝福</text>
+      <text wx-if="{{!recordFinish}}">长按录入你所选的祝福语</text>
       <text wx-if="{{recordFinish}}">录音完成,可长按重新录制</text>
     </view>
     <view class="feild money">
@@ -168,7 +218,8 @@
       <label>数量(个)</label>
       <input placeholder="填写数量" placeholder-class="input-placeholder" type="number" maxlength="3" bindinput="numInputHandler"/>
     </view>
-    <button class="make-btn" bindtap="makeVoice">生成语音红包</button>
+    <button class="make-btn" bindtap="makeVoice">生成语音口令</button>
+    <view class="make-btn-blur"></view>
     <view class="tip">需支付¥0.00服务费，优先使用余额支付</view>
   </view>
   <image src="../assets/images/recording.gif" mode="widthFix" class="recording" wx-if="{{recording}}"></image>
@@ -245,7 +296,7 @@ export default class Index extends wepy.page {
       '年底再忙，也要记得休息',
       '简简单单，健康快乐幸福就好',
       '我新年最大的愿望是升职加薪',
-      '2018年，赐你一个赋予别人开心的超能力'
+      '2018，赐你赋予别人开心的超能力'
     ],
     wishIndex: 0,
     wishText: '',
@@ -311,7 +362,7 @@ export default class Index extends wepy.page {
           return false
         }
       }
-      wx.redirectTo({ url: `share?id=${this.id}` })
+      wx.navigateTo({ url: `share?id=${this.id}` })
     },
     moneyInputHandler: e => {
       if (+e.detail.value >= 1000) {

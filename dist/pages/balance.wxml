@@ -8,9 +8,9 @@
     <view class="withdrawal-remark">提现金额</view>
     <view class="withdrawal-iptWrapper">
         <text class="icon">¥</text>
-        <input placeholder="请输入提现金额" placeholder-class="input-placeholder" type="digit"/>
+        <input placeholder="请输入提现金额" placeholder-class="input-placeholder" type="digit" bindinput="moneyInputHandler"/>
     </view>
-    <view class="tip">提现到微信钱包,<text class="all" bindtap="withdrawalAll">全部提现</text></view>
-    <button class="btn" bindtap="submit">提现</button>
-    <view class="time">1-2个工作日到账</view>
+    <view class="tip">提现到微信钱包,<text class="all" bindtap="submit" data-wpysubmit-a="{{userMoney}}">全部提现</text></view>
+    <button class="btn" bindtap="submit" data-wpysubmit-a="{{transMoney}}">提现</button>
+    <view class="time">1-5个工作日到账</view>
 </view>

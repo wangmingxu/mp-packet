@@ -15,6 +15,7 @@
       <view class="dashboard">
         <image class="dashboard-bg" src="../assets/images/bg-record.png" mode="widthFix"/>
         <image src="{{userInfo.avatarUrl}}" class="avatar"/>
+        <view class="nickName">{{userInfo.nickName}}<text class="bold">{{index>0?'共收到':'共发出'}}</text></view>
         <view class="total">
             <view class="money">
                 <view class="num">{{index>0?moneyFormat.getYuan(receiveLog.money):moneyFormat.getYuan(sendLog.money)}}</view>
